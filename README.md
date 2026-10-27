@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Udaan
 
-## Getting Started
+Udaan is a domestic flight search app for comparing itineraries across India. Search one-way or round-trip routes, filter and sort fares, and follow seller links to complete a booking. Udaan does not book flights.
 
-First, run the development server:
+Flight results come from FlightAPI. Searches reuse locally saved results when available; requesting current prices makes a new FlightAPI request and may use provider credits. Saved prices can be outdated.
+
+## Features
+
+- Search routes between supported Indian airports.
+- Compare one-way and round-trip itineraries, including duration, stops, airline, and seller prices.
+- Sort by price, duration, or departure time; filter by stops, airline, and maximum price.
+- Reuse local search results and explicitly request an updated fare from FlightAPI.
+- Validate search inputs and provider responses on the server.
+
+## Requirements
+
+- Node.js 20.9 or newer
+- npm
+- A FlightAPI API key to fetch current fares
+
+## Getting started
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create `.env.local` from the example file:
+
+```powershell
+Copy-Item .env.example .env.local
+```
+
+On macOS or Linux, use `cp .env.example .env.local` instead. Add your key to `.env.local`:
+
+```dotenv
+FLIGHTAPI_KEY=your_flightapi_key
+```
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). Keep your real API key private; `.env.local` is ignored by Git. Without a valid key, current-price requests will return an error. Previously saved results may still be available from the local cache.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Available scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the Next.js development server. |
+| `npm run build` | Build the production app. |
+| `npm run start` | Serve the production build. |
+| `npm run lint` | Run ESLint. |
+| `npm test` | Run the flight search API tests. |
 
-## Learn More
+## Data and privacy
 
-To learn more about Next.js, take a look at the following resources:
+Flight searches are sent to the server-side FlightAPI integration. The API key is read from `FLIGHTAPI_KEY` and is not sent to the browser. Search results are cached in `.cache/flightapi/` on the server running the app; this local cache is excluded from Git and may not persist between deployments.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Tech stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Next.js 16 with the App Router
+- React 19 and TypeScript
+- Tailwind CSS 4
+- FlightAPI for flight search data

@@ -108,7 +108,7 @@ export const getAirportTracking = async (
   if (!accessKey.trim() || /^(your[_ -]?.*|replace.*)$/i.test(accessKey.trim())) {
     throw new AviationstackError(503, "Add AVIATIONSTACK_ACCESS_KEY to .env.local, then restart the app.");
   }
-  const url = new URL("https://api.apilayer.net/aviationstack/v1/flights");
+  const url = new URL("https://api.aviationstack.com/v1/flights");
   url.searchParams.set("access_key", accessKey.trim());
   url.searchParams.set(query.direction === "arr" ? "arr_iata" : "dep_iata", query.airport);
   url.searchParams.set("limit", "100");

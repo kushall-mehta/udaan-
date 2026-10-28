@@ -17,7 +17,7 @@ const futureIndiaDate = (days: number) => {
         month: "2-digit",
         day: "2-digit"
     }).format(new Date());
-    const date = new Date(`${today}T00:00:00Z`);
+    const date = new Date(`${today}T00:00:00Z`); /**/
     date.setUTCDate(date.getUTCDate() + days);
     return date.toISOString().slice(0, 10);
 };

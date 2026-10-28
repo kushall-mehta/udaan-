@@ -5,6 +5,11 @@ import {airports} from "@/data/airports";
 import type {AirportDirection, AirportFlightStatus, AirportTrackingResponse, FlightTrackingResponse} from "@/types/airport-tracking";
 
 type ApiError = { error?: string };
+const exampleFlightNumbers = [
+    {code: "AI2985", route: "DEL → BOM"},
+    {code: "AI2549", route: "DEL → HYD"},
+    {code: "6E6517", route: "DEL → CCU"},
+];
 const localTime = (value: string | null) => value
     ? new Date(value).toLocaleTimeString("en-IN", {timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hourCycle: "h23"})
     : "—";
@@ -24,7 +29,6 @@ const statusClass = (status: string) => status.toLowerCase().replaceAll(" ", "-"
 const AirportTracking = () => {
     const [airport, setAirport] = useState("BOM");
     const [direction, setDirection] = useState<AirportDirection>("arr");
-    const [flightCode, setFlightCode] = useState("");
     const [timeFrom, setTimeFrom] = useState("");
     const [timeTo, setTimeTo] = useState("");
     const [flightNumber, setFlightNumber] = useState("");
@@ -86,9 +90,6 @@ const AirportTracking = () => {
     const fromMinutes = timeFrom ? Number(timeFrom.slice(0, 2)) * 60 + Number(timeFrom.slice(3, 5)) : null;
     const toMinutes = timeTo ? Number(timeTo.slice(0, 2)) * 60 + Number(timeTo.slice(3, 5)) : null;
     const filteredFlights = (result?.flights ?? []).filter((flight) => {
-        const code = flightCode.trim().toUpperCase().replaceAll(" ", "");
-        const flightCodes = `${flight.airlineCode}${flight.flightNumber} ${flight.flightNumber} ${flight.flightId}`.toUpperCase().replaceAll(" ", "");
-        if (code && !flightCodes.includes(code)) return false;
         if (fromMinutes !== null || toMinutes !== null) {
             const flightMinutes = timeInMinutes(flight.estimatedTime ?? flight.actualTime ?? flight.scheduledTime);
             if (flightMinutes === null) return false;
@@ -100,9 +101,6 @@ const AirportTracking = () => {
         }
         return true;
     });
-    const selectedFlight = filteredFlights.find((flight) => flight.flightId === selectedFlightId) ?? null;
-    const selectedTrackedFlight = flightResult?.flights.find((flight) => flight.flightId === selectedTrackedFlightId) ?? null;
-
     return (
         <main className="airport-tracking-page">
             <section className="tracking-hero">
@@ -122,11 +120,6 @@ const AirportTracking = () => {
                         </datalist>
                     </label>
                     <label>
-                        <span>FLIGHT CODE</span>
-                        <input value={flightCode} onChange={(event) => setFlightCode(event.target.value)}
-                            placeholder="e.g. AI101" aria-label="Filter by flight code" />
-                    </label>
-                    <label>
                         <span>FROM (IST)</span>
                         <input type="time" value={timeFrom} onChange={(event) => setTimeFrom(event.target.value)} aria-label="Filter flights from time in India" />
                     </label>
@@ -142,7 +135,7 @@ const AirportTracking = () => {
                         {loading ? "Checking Aviationstack…" : result ? "Refresh board" : "Show flights"}
                     </button>
                 </form>
-                <p className="tracking-window-note">Airport code is sent to Aviationstack. Flight code and IST time filters narrow the returned results locally; refresh manually to check for updates.</p>
+                <p className="tracking-window-note">Airport code is sent to Aviationstack. IST time filters narrow the returned results locally; refresh manually to check for updates.</p>
 
                 {error && <div className="tracking-message tracking-error" role="alert">{error}</div>}
                 {!error && !result && !loading && <div className="tracking-empty">Choose an airport and arrivals or departures to view its flight board.</div>}
@@ -171,7 +164,6 @@ const AirportTracking = () => {
                                 ))}
                             </div>
                         )}
-                        {selectedFlight && <FlightTrackDetails flight={selectedFlight}/>}
                     </div>
                 )}
             </section>
@@ -193,6 +185,15 @@ const AirportTracking = () => {
                         {flightLoading ? "Finding flight…" : flightResult ? "Refresh flight" : "Track flight"}
                     </button>
                 </form>
+                <div className="flight-number-examples" aria-label="Example flight numbers">
+                    <span>Try an example:</span>
+                    {exampleFlightNumbers.map((example) => (
+                        <button key={example.code} type="button" onClick={() => setFlightNumber(example.code)}>
+                            {example.code} <small>{example.route}</small>
+                        </button>
+                    ))}
+                    <small>Examples may stop returning results as schedules change.</small>
+                </div>
                 <p className="tracking-window-note">Searches Aviationstack by flight number. Results depend on current provider coverage; a live map position is shown when available.</p>
                 {flightError && <div className="tracking-message tracking-error" role="alert">{flightError}</div>}
                 {flightLoading && <div className="tracking-empty" role="status">Looking up this flight…</div>}
@@ -215,7 +216,6 @@ const AirportTracking = () => {
                                 ))}
                             </div>
                         )}
-                        {selectedTrackedFlight && <FlightTrackDetails flight={selectedTrackedFlight}/>}
                     </div>
                 )}
             </section>
@@ -250,6 +250,7 @@ const FlightRow = ({flight, direction, selected, onTrack}: {
             <button className="tracking-track-button" type="button" onClick={onTrack} aria-label={`${selected ? "Hide" : "Show"} more details for flight ${flight.airlineCode}${flight.flightNumber}`}>
                 {selected ? "Hide details" : "More details"}
             </button>
+            {selected && <FlightTrackDetails flight={flight}/>}
         </article>
     );
 };
@@ -260,7 +261,6 @@ const FlightTrackDetails = ({flight}: { flight: AirportFlightStatus }) => {
     if (latest && mapUrl) {
         mapUrl.searchParams.set("bbox", `${latest.longitude - 0.25},${latest.latitude - 0.18},${latest.longitude + 0.25},${latest.latitude + 0.18}`);
         mapUrl.searchParams.set("layer", "mapnik");
-        mapUrl.searchParams.set("marker", `${latest.latitude},${latest.longitude}`);
     }
     const mapLink = latest ? `https://www.openstreetmap.org/?mlat=${latest.latitude}&mlon=${latest.longitude}#map=8/${latest.latitude}/${latest.longitude}` : null;
 
@@ -271,8 +271,15 @@ const FlightTrackDetails = ({flight}: { flight: AirportFlightStatus }) => {
                 <span>{flight.origin} → {flight.destination}</span>
             </div>
             <div className="track-details-grid">
-                {latest && mapUrl ? <iframe className="track-map" title={`Map showing ${flight.airlineCode} ${flight.flightNumber} position`}
-                    src={mapUrl.toString()} loading="lazy" referrerPolicy="no-referrer"/> :
+                {latest && mapUrl ? (
+                    <div className="track-map-frame">
+                        <iframe className="track-map" title={`Map showing ${flight.airlineCode} ${flight.flightNumber} position`}
+                            src={mapUrl.toString()} loading="lazy" referrerPolicy="no-referrer"/>
+                        <span className="flight-map-marker" role="img" aria-label={`${flight.airlineCode} ${flight.flightNumber} reported position`}>
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5L21 16Z"/></svg>
+                        </span>
+                    </div>
+                ) :
                     <div className="track-map track-map-empty">No live map position is available for this flight right now.</div>}
                 <div className="track-position-summary">
                     <span className="position-label">STATUS & SCHEDULE</span>

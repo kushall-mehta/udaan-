@@ -63,7 +63,7 @@ Open [http://localhost:3000](http://localhost:3000). Keep your real API key priv
 
 ## Airport tracking
 
-Open **Airport tracking** in the navigation, enter an Indian airport's IATA code, and choose arrivals or departures to load the current board. Filter the returned flights by flight code or an optional IST time range. Use **More details** to see schedule and status details and a live map position when available. The separate **Track by flight number** form queries one flight directly. Each refresh makes one Aviationstack API request; local filters do not make extra requests, and the page does not poll automatically. A missing map position means the provider did not return a live location for that flight.
+Open **Airport tracking** in the navigation, enter an Indian airport's IATA code, and choose arrivals or departures to load the current board. Optionally filter by an IST time range. Use **More details** to see schedule and status details and a live map position when available. The separate **Track by flight number** form queries one flight directly. Each refresh makes one Aviationstack API request; the time filter does not make extra requests, and the page does not poll automatically. A missing map position means the provider did not return a live location for that flight.
 
 ## Data and privacy
 

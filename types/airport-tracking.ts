@@ -35,3 +35,9 @@ export type AirportTrackingResponse = {
   checkedAt: string;
   flights: AirportFlightStatus[];
 };
+
+export type FlightTrackingResponse = {
+  flightNumber: string;
+  checkedAt: string;
+  flights: AirportFlightStatus[];
+};

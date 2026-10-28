@@ -4,11 +4,13 @@ import type {
   AirportFlightStatus,
   AirportFlightTrack,
   AirportTrackingResponse,
+  FlightTrackingResponse,
   TrackedPosition,
 } from "../../types/airport-tracking";
 
 type Row = Record<string, unknown>;
 export type AirportTrackingQuery = { airport: string; direction: AirportDirection };
+export type FlightTrackingQuery = { flightNumber: string };
 
 export class AviationstackError extends Error {
   constructor(public readonly status: number, message: string) {
@@ -52,6 +54,13 @@ export const validateAirportTracking = (params: URLSearchParams): AirportTrackin
   const direction = params.get("direction");
   if (direction !== "arr" && direction !== "dep") throw new AviationstackError(400, "Choose arrivals or departures.");
   return { airport, direction };
+};
+
+export const validateFlightTracking = (params: URLSearchParams): FlightTrackingQuery => {
+  if (params.getAll("flightNumber").length !== 1) throw new AviationstackError(400, "Supply flightNumber exactly once.");
+  const flightNumber = (params.get("flightNumber") ?? "").toUpperCase().replaceAll(/\s+/g, "");
+  if (!/^[A-Z0-9]{2,10}$/.test(flightNumber)) throw new AviationstackError(400, "Enter a valid flight number, such as AI101.");
+  return { flightNumber };
 };
 
 const normalizeStatus = (flight: Row, direction: AirportDirection): AirportFlightStatus | null => {
@@ -100,20 +109,7 @@ const normalizeStatus = (flight: Row, direction: AirportDirection): AirportFligh
   };
 };
 
-export const getAirportTracking = async (
-  query: AirportTrackingQuery,
-  accessKey: string,
-  fetcher: typeof fetch = fetch,
-): Promise<AirportTrackingResponse> => {
-  if (!accessKey.trim() || /^(your[_ -]?.*|replace.*)$/i.test(accessKey.trim())) {
-    throw new AviationstackError(503, "Add AVIATIONSTACK_ACCESS_KEY to .env.local, then restart the app.");
-  }
-  const url = new URL("https://api.aviationstack.com/v1/flights");
-  url.searchParams.set("access_key", accessKey.trim());
-  url.searchParams.set(query.direction === "arr" ? "arr_iata" : "dep_iata", query.airport);
-  url.searchParams.set("limit", "100");
-  url.searchParams.set("offset", "0");
-
+const requestBody = async (url: URL, fetcher: typeof fetch): Promise<Row & { data: Row[] }> => {
   let response: Response;
   try {
     response = await fetcher(url, { cache: "no-store", signal: AbortSignal.timeout(20_000) });
@@ -135,9 +131,50 @@ export const getAirportTracking = async (
     throw new AviationstackError(502, "Aviationstack could not complete this airport tracking request.");
   }
   if (!Array.isArray(body.data)) throw new AviationstackError(502, "Aviationstack returned an unexpected response.");
-  const flights = body.data.filter(isRecord)
+  return { ...body, data: body.data.filter(isRecord) };
+};
+
+const hasAccessKey = (accessKey: string): void => {
+  if (!accessKey.trim() || /^(your[_ -]?.*|replace.*)$/i.test(accessKey.trim())) {
+    throw new AviationstackError(503, "Add AVIATIONSTACK_ACCESS_KEY to .env.local, then restart the app.");
+  }
+};
+
+export const getAirportTracking = async (
+  query: AirportTrackingQuery,
+  accessKey: string,
+  fetcher: typeof fetch = fetch,
+): Promise<AirportTrackingResponse> => {
+  hasAccessKey(accessKey);
+  const url = new URL("https://api.aviationstack.com/v1/flights");
+  url.searchParams.set("access_key", accessKey.trim());
+  url.searchParams.set(query.direction === "arr" ? "arr_iata" : "dep_iata", query.airport);
+  url.searchParams.set("limit", "100");
+  url.searchParams.set("offset", "0");
+
+  const body = await requestBody(url, fetcher);
+  const flights = body.data
     .map((flight) => normalizeStatus(flight, query.direction))
     .filter((flight): flight is AirportFlightStatus => Boolean(flight))
     .sort((a, b) => (a.estimatedTime ?? a.actualTime ?? a.scheduledTime ?? "").localeCompare(b.estimatedTime ?? b.actualTime ?? b.scheduledTime ?? ""));
   return { airport: query.airport, direction: query.direction, checkedAt: new Date().toISOString(), flights };
+};
+
+export const getFlightTracking = async (
+  query: FlightTrackingQuery,
+  accessKey: string,
+  fetcher: typeof fetch = fetch,
+): Promise<FlightTrackingResponse> => {
+  hasAccessKey(accessKey);
+  const url = new URL("https://api.aviationstack.com/v1/flights");
+  url.searchParams.set("access_key", accessKey.trim());
+  url.searchParams.set("flight_number", query.flightNumber);
+  url.searchParams.set("limit", "100");
+  url.searchParams.set("offset", "0");
+  const body = await requestBody(url, fetcher);
+  const flights = body.data
+    .map((flight) => normalizeStatus(flight, "arr"))
+    .filter((flight): flight is AirportFlightStatus => Boolean(flight))
+    .sort((a, b) => (a.estimatedTime ?? a.actualTime ?? a.scheduledTime ?? "").localeCompare(b.estimatedTime ?? b.actualTime ?? b.scheduledTime ?? ""));
+  return { flightNumber: query.flightNumber, checkedAt: new Date().toISOString(), flights };
 };

@@ -10,6 +10,7 @@ const UdaanHeader = () => {
       <nav aria-label="Main navigation">
         <Link href="/#flight-search" className="active">Flights</Link>
         <Link href="/#sample-flights">Sample fares</Link>
+        <Link href="/tracking">Airport tracking</Link>
       </nav>
       <span className="practice-link">Domestic journeys ↗</span>
     </header>

@@ -168,6 +168,67 @@
 .pagination-ellipsis { padding: 0 3px; color: var(--muted); }
 @media(max-width:700px) { .flight-pagination { align-items: flex-start; flex-direction: column; }.pagination-buttons { justify-content: flex-start; }.pagination-buttons button { padding: 8px; } }
 
+.airport-tracking-page { max-width: 1160px; margin: 0 auto; padding: 48px 24px 72px; }
+.tracking-hero { padding: 30px 0 36px; }
+.tracking-hero h1 { margin: 14px 0 12px; color: var(--ink); font-size: clamp(42px, 6vw, 64px); font-weight: 500; line-height: 1.04; letter-spacing: -2.8px; }
+.tracking-hero h1 em { color: #477456; font-family: Georgia, serif; font-weight: 400; }
+.tracking-hero > p:last-child { color: var(--muted); font-size: 14px; }
+.tracking-panel { overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: #fff; box-shadow: 0 12px 35px rgba(22,56,46,.05); }
+.tracking-controls { display: grid; grid-template-columns: minmax(210px,1.5fr) auto auto; align-items: end; gap: 12px; padding: 20px; }
+.tracking-controls label { display: flex; min-width: 0; flex-direction: column; gap: 6px; }
+.tracking-controls label > span { color: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 1.25px; }
+.tracking-controls select,.tracking-controls input { width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 6px; background: #fff; padding: 8px 10px; font-size: 12px; }
+.tracking-direction { display: flex; min-height: 42px; align-items: stretch; border: 1px solid var(--line); border-radius: 6px; padding: 3px; }
+.tracking-direction button { padding: 0 10px; border-radius: 4px; background: transparent; color: var(--muted); font-size: 10px; white-space: nowrap; }
+.tracking-direction button[aria-pressed="true"] { background: #e8efe8; color: var(--green); font-weight: 700; }
+.tracking-search { min-height: 42px; border-radius: 6px; background: var(--green); color: #fff; padding: 0 14px; font-size: 11px; font-weight: 650; white-space: nowrap; }
+.tracking-search:hover:not(:disabled) { background: #173e2e; }
+.tracking-search:disabled { cursor: wait; opacity: .55; }
+.tracking-window-note { border-top: 1px solid #eff2ed; padding: 11px 20px; color: var(--muted); font-size: 10px; }
+.tracking-empty { padding: 42px 20px; color: var(--muted); font-size: 12px; text-align: center; }
+.tracking-message { margin: 18px 20px; border-radius: 6px; padding: 12px 14px; font-size: 12px; }
+.tracking-error { border: 1px solid #e7c9bd; background: #fff3ef; color: #8a3928; }
+.tracking-board { border-top: 1px solid var(--line); }
+.tracking-board-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px; }
+.tracking-board-heading h2 { margin-top: 7px; font-size: 22px; font-weight: 650; }
+.tracking-board-heading h2 span { margin-left: 6px; color: var(--muted); font-size: 13px; font-weight: 500; }
+.tracking-flight-count { border-radius: 20px; background: #edf4ed; color: var(--green); padding: 6px 10px; font-size: 10px; font-weight: 650; }
+.tracking-flight-list { border-top: 1px solid #edf0eb; }
+.tracking-flight-row { display: grid; grid-template-columns: 76px minmax(180px,1fr) minmax(100px,.6fr) 120px 105px; align-items: center; gap: 15px; min-height: 76px; border-bottom: 1px solid #edf0eb; padding: 12px 20px; }
+.tracking-flight-row.is-selected { background: #f4f8f3; }
+.tracking-time-block { display: flex; flex-direction: column; gap: 3px; }
+.tracking-time-block strong { font-size: 16px; }
+.tracking-time-block small { color: var(--muted); font-size: 9px; }
+.tracking-flight-main > strong { display: block; font-size: 12px; }
+.tracking-flight-main > strong span { margin-left: 4px; color: var(--muted); font-size: 10px; font-weight: 500; }
+.tracking-flight-main p { margin-top: 3px; color: var(--muted); font-size: 10px; }
+.tracking-gate-info { display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 10px; }
+.tracking-status { justify-self: start; border: 1px solid #dce8d9; border-radius: 20px; background: #eef5eb; color: #2c694b; padding: 5px 9px; font-size: 9px; font-weight: 650; }
+.status-cancelled,.status-diverted { border-color: #efc9bd; background: #fff0eb; color: #9c432a; }
+.status-landed { border-color: #dfe5df; background: #f1f3f0; color: #5d6c60; }
+.tracking-track-button { justify-self: end; border: 1px solid #cadbca; border-radius: 5px; background: #fff; color: var(--green); padding: 8px 10px; font-size: 10px; font-weight: 650; white-space: nowrap; }
+.tracking-track-button:hover:not(:disabled) { background: #edf4ed; }
+.tracking-track-button:disabled { cursor: default; color: #919a91; opacity: .75; }
+.flight-track-details { margin: 20px; border: 1px solid #dfe8dd; border-radius: 9px; background: #fbfcfa; padding: 18px; }
+.track-details-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.track-details-heading h3 { margin-top: 5px; font-size: 18px; }
+.track-details-heading > span { color: var(--muted); font-size: 11px; }
+.track-details-grid { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(220px,1fr); gap: 16px; }
+.track-map { width: 100%; min-height: 250px; border: 1px solid var(--line); border-radius: 6px; background: #eef1ea; }
+.track-position-summary { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; border-radius: 6px; background: #f1f5ef; padding: 16px; }
+.position-label { color: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 1px; }
+.track-position-summary > strong { font-size: 17px; }
+.track-position-summary p { color: #53665a; font-size: 11px; }
+.track-position-summary a { margin-top: auto; padding-top: 10px; color: var(--green); font-size: 10px; text-decoration: underline; }
+.track-history { margin-top: 15px; border-top: 1px solid var(--line); padding-top: 12px; }
+.track-history summary { color: var(--green); cursor: pointer; font-size: 11px; font-weight: 650; }
+.track-history-list { margin-top: 8px; }
+.track-history-point { display: grid; grid-template-columns: 90px 1fr 100px; gap: 12px; border-top: 1px solid #edf0eb; padding: 8px 0; color: var(--muted); font-size: 10px; }
+.track-estimate-note { margin-top: 10px !important; color: var(--muted); font-size: 9px; }
+.tracking-disclaimer { max-width: 720px; margin: 14px 0 0 !important; color: var(--muted); font-size: 10px; line-height: 1.6; }
+@media(max-width:950px) { .tracking-controls { grid-template-columns: minmax(160px,1fr) auto auto; }.tracking-search { justify-self: end; } }
+@media(max-width:700px) { .airport-tracking-page { padding: 30px 16px 50px; }.tracking-controls { grid-template-columns: 1fr 1fr; padding: 14px; }.tracking-controls label:first-child { grid-column: 1 / -1; }.tracking-direction { grid-column: 1; }.tracking-search { width: 100%; }.tracking-window-note { padding: 10px 14px; }.tracking-flight-row { grid-template-columns: 58px 1fr auto; gap: 9px; padding: 12px; }.tracking-gate-info { grid-column: 2; grid-row: 2; flex-direction: row; flex-wrap: wrap; }.tracking-status { grid-column: 3; grid-row: 1; }.tracking-track-button { grid-column: 3; grid-row: 2; }.track-details-grid { grid-template-columns: 1fr; }.track-map { min-height: 220px; }.flight-track-details { margin: 12px; padding: 13px; } }
+
 .best-booking-link { grid-column: 1 / -1; justify-self: start; display: inline-flex; align-items: center; border: 0; border-radius: 5px; background: var(--green); color: #fff !important; padding: 10px 13px; font-size: 10px; font-weight: 650; text-decoration: none; }
 .best-booking-link:hover:not(:disabled) { background: #173e2e; }
 .best-booking-link:disabled { opacity: .55; cursor: not-allowed; }

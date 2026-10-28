@@ -174,7 +174,7 @@
 .tracking-hero h1 em { color: #477456; font-family: Georgia, serif; font-weight: 400; }
 .tracking-hero > p:last-child { color: var(--muted); font-size: 14px; }
 .tracking-panel { overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: #fff; box-shadow: 0 12px 35px rgba(22,56,46,.05); }
-.tracking-controls { display: grid; grid-template-columns: minmax(210px,1.5fr) auto auto; align-items: end; gap: 12px; padding: 20px; }
+.tracking-controls { display: grid; grid-template-columns: minmax(150px,1.15fr) minmax(130px,1fr) minmax(115px,.8fr) minmax(115px,.8fr) auto auto; align-items: end; gap: 12px; padding: 20px; }
 .tracking-controls label { display: flex; min-width: 0; flex-direction: column; gap: 6px; }
 .tracking-controls label > span { color: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 1.25px; }
 .tracking-controls select,.tracking-controls input { width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 6px; background: #fff; padding: 8px 10px; font-size: 12px; }
@@ -226,8 +226,8 @@
 .track-history-point { display: grid; grid-template-columns: 90px 1fr 100px; gap: 12px; border-top: 1px solid #edf0eb; padding: 8px 0; color: var(--muted); font-size: 10px; }
 .track-estimate-note { margin-top: 10px !important; color: var(--muted); font-size: 9px; }
 .tracking-disclaimer { max-width: 720px; margin: 14px 0 0 !important; color: var(--muted); font-size: 10px; line-height: 1.6; }
-@media(max-width:950px) { .tracking-controls { grid-template-columns: minmax(160px,1fr) auto auto; }.tracking-search { justify-self: end; } }
-@media(max-width:700px) { .airport-tracking-page { padding: 30px 16px 50px; }.tracking-controls { grid-template-columns: 1fr 1fr; padding: 14px; }.tracking-controls label:first-child { grid-column: 1 / -1; }.tracking-direction { grid-column: 1; }.tracking-search { width: 100%; }.tracking-window-note { padding: 10px 14px; }.tracking-flight-row { grid-template-columns: 58px 1fr auto; gap: 9px; padding: 12px; }.tracking-gate-info { grid-column: 2; grid-row: 2; flex-direction: row; flex-wrap: wrap; }.tracking-status { grid-column: 3; grid-row: 1; }.tracking-track-button { grid-column: 3; grid-row: 2; }.track-details-grid { grid-template-columns: 1fr; }.track-map { min-height: 220px; }.flight-track-details { margin: 12px; padding: 13px; } }
+@media(max-width:950px) { .tracking-controls { grid-template-columns: repeat(4,minmax(0,1fr)); }.tracking-controls label:first-child { grid-column: span 2; }.tracking-search { justify-self: end; } }
+@media(max-width:700px) { .airport-tracking-page { padding: 30px 16px 50px; }.tracking-controls { grid-template-columns: 1fr 1fr; padding: 14px; }.tracking-controls label:first-child,.tracking-controls label:nth-child(2) { grid-column: 1 / -1; }.tracking-direction { grid-column: 1; }.tracking-search { grid-column: 2; width: 100%; }.tracking-window-note { padding: 10px 14px; }.tracking-flight-row { grid-template-columns: 58px 1fr auto; gap: 9px; padding: 12px; }.tracking-gate-info { grid-column: 2; grid-row: 2; flex-direction: row; flex-wrap: wrap; }.tracking-status { grid-column: 3; grid-row: 1; }.tracking-track-button { grid-column: 3; grid-row: 2; }.track-details-grid { grid-template-columns: 1fr; }.track-map { min-height: 220px; }.flight-track-details { margin: 12px; padding: 13px; } }
 
 .best-booking-link { grid-column: 1 / -1; justify-self: start; display: inline-flex; align-items: center; border: 0; border-radius: 5px; background: var(--green); color: #fff !important; padding: 10px 13px; font-size: 10px; font-weight: 650; text-decoration: none; }
 .best-booking-link:hover:not(:disabled) { background: #173e2e; }

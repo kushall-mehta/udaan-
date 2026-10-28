@@ -8,11 +8,25 @@ type ApiError = { error?: string };
 const localTime = (value: string | null) => value
     ? new Date(value).toLocaleTimeString("en-IN", {timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hourCycle: "h23"})
     : "—";
+const timeInMinutes = (value: string | null): number | null => {
+    if (!value) return null;
+    const parsed = new Date(value);
+    if (!Number.isFinite(parsed.getTime())) return null;
+    const parts = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+    }).formatToParts(parsed);
+    const hour = Number(parts.find((part) => part.type === "hour")?.value);
+    const minute = Number(parts.find((part) => part.type === "minute")?.value);
+    return Number.isFinite(hour) && Number.isFinite(minute) ? hour * 60 + minute : null;
+};
 const statusClass = (status: string) => status.toLowerCase().replaceAll(" ", "-");
 
 const AirportTracking = () => {
     const [airport, setAirport] = useState("BOM");
     const [direction, setDirection] = useState<AirportDirection>("arr");
+    const [flightCode, setFlightCode] = useState("");
+    const [timeFrom, setTimeFrom] = useState("");
+    const [timeTo, setTimeTo] = useState("");
     const [result, setResult] = useState<AirportTrackingResponse | null>(null);
     const [selectedFlightId, setSelectedFlightId] = useState<string | null>(null);
     const [error, setError] = useState("");
@@ -40,8 +54,25 @@ const AirportTracking = () => {
         }
     };
 
-    const selectedFlight = result?.flights.find((flight) => flight.flightId === selectedFlightId) ?? null;
     const airportInfo = airports.find((item) => item.code === result?.airport);
+    const fromMinutes = timeFrom ? Number(timeFrom.slice(0, 2)) * 60 + Number(timeFrom.slice(3, 5)) : null;
+    const toMinutes = timeTo ? Number(timeTo.slice(0, 2)) * 60 + Number(timeTo.slice(3, 5)) : null;
+    const filteredFlights = (result?.flights ?? []).filter((flight) => {
+        const code = flightCode.trim().toUpperCase().replaceAll(" ", "");
+        const flightCodes = `${flight.airlineCode}${flight.flightNumber} ${flight.flightNumber} ${flight.flightId}`.toUpperCase().replaceAll(" ", "");
+        if (code && !flightCodes.includes(code)) return false;
+        if (fromMinutes !== null || toMinutes !== null) {
+            const flightMinutes = timeInMinutes(flight.estimatedTime ?? flight.actualTime ?? flight.scheduledTime);
+            if (flightMinutes === null) return false;
+            if (fromMinutes !== null && toMinutes !== null) {
+                if (fromMinutes <= toMinutes && (flightMinutes < fromMinutes || flightMinutes > toMinutes)) return false;
+                if (fromMinutes > toMinutes && flightMinutes < fromMinutes && flightMinutes > toMinutes) return false;
+            } else if (fromMinutes !== null && flightMinutes < fromMinutes) return false;
+            else if (toMinutes !== null && flightMinutes > toMinutes) return false;
+        }
+        return true;
+    });
+    const selectedFlight = filteredFlights.find((flight) => flight.flightId === selectedFlightId) ?? null;
 
     return (
         <main className="airport-tracking-page">
@@ -54,10 +85,25 @@ const AirportTracking = () => {
             <section className="tracking-panel" aria-label="Airport flight tracking">
                 <form className="tracking-controls" onSubmit={(event) => void loadFlights(event)}>
                     <label>
-                        <span>AIRPORT</span>
-                        <select value={airport} onChange={(event) => setAirport(event.target.value)}>
-                            {airports.map((item) => <option key={item.code} value={item.code}>{item.city} · {item.code}</option>)}
-                        </select>
+                        <span>AIRPORT IATA CODE</span>
+                        <input list="tracking-airports" value={airport} onChange={(event) => setAirport(event.target.value.toUpperCase())}
+                            maxLength={3} pattern="[A-Za-z]{3}" placeholder="e.g. BOM" required aria-label="Airport IATA code" />
+                        <datalist id="tracking-airports">
+                            {airports.map((item) => <option key={item.code} value={item.code} label={item.city} />)}
+                        </datalist>
+                    </label>
+                    <label>
+                        <span>FLIGHT CODE</span>
+                        <input value={flightCode} onChange={(event) => setFlightCode(event.target.value)}
+                            placeholder="e.g. AI101" aria-label="Filter by flight code" />
+                    </label>
+                    <label>
+                        <span>FROM (IST)</span>
+                        <input type="time" value={timeFrom} onChange={(event) => setTimeFrom(event.target.value)} aria-label="Filter flights from time in India" />
+                    </label>
+                    <label>
+                        <span>TO (IST)</span>
+                        <input type="time" value={timeTo} onChange={(event) => setTimeTo(event.target.value)} aria-label="Filter flights until time in India" />
                     </label>
                     <div className="tracking-direction" role="group" aria-label="Flight direction">
                         <button type="button" aria-pressed={direction === "arr"} onClick={() => setDirection("arr")}>Arrivals</button>
@@ -67,7 +113,7 @@ const AirportTracking = () => {
                         {loading ? "Checking Aviationstack…" : result ? "Refresh board" : "Show flights"}
                     </button>
                 </form>
-                <p className="tracking-window-note">Shows current provider results. Refresh manually to check for updates; the page does not poll automatically.</p>
+                <p className="tracking-window-note">Airport code is sent to Aviationstack. Flight code and IST time filters narrow the returned results locally; refresh manually to check for updates.</p>
 
                 {error && <div className="tracking-message tracking-error" role="alert">{error}</div>}
                 {!error && !result && !loading && <div className="tracking-empty">Choose an airport and arrivals or departures to view its flight board.</div>}
@@ -80,14 +126,16 @@ const AirportTracking = () => {
                                 <p className="eyebrow dark">{result.direction === "arr" ? "ARRIVALS" : "DEPARTURES"} · UPDATED {new Date(result.checkedAt).toLocaleTimeString("en-IN", {timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit"})} IST</p>
                                 <h2>{airportInfo?.city} <span>{result.airport}</span></h2>
                             </div>
-                            <span className="tracking-flight-count">{result.flights.length} flights</span>
+                            <span className="tracking-flight-count">{filteredFlights.length}{filteredFlights.length !== result.flights.length ? ` / ${result.flights.length}` : ""} flights</span>
                         </div>
 
-                        {result.flights.length === 0 ? (
-                            <div className="tracking-empty">No flights were returned for this airport. Availability depends on provider coverage.</div>
+                        {filteredFlights.length === 0 ? (
+                            <div className="tracking-empty">{result.flights.length === 0
+                                ? "No flights were returned for this airport. Availability depends on provider coverage."
+                                : "No flights match these flight-code and time filters."}</div>
                         ) : (
                             <div className="tracking-flight-list">
-                                {result.flights.map((flight) => (
+                                {filteredFlights.map((flight) => (
                                     <FlightRow key={flight.flightId} flight={flight} direction={result.direction}
                                         selected={flight.flightId === selectedFlightId}
                                         onTrack={() => setSelectedFlightId((current) => current === flight.flightId ? null : flight.flightId)} />

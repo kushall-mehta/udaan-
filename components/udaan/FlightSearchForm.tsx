@@ -153,8 +153,8 @@ const FlightSearchForm = ({loading, onSearch}: FlightSearchFormProps) => {
             {message && <p className="search-feedback" aria-live="polite">{message}</p>}
             <div className="data-notice">
                 <span className="notice-dot" aria-hidden="true"/>
-                <p>Searches reuse saved results from the cache file. Get current prices to make a new FlightAPI request;
-                    saved prices may be outdated.</p>
+                <p>Each search checks FlightAPI first. If it is unavailable, Udaan shows saved results when available;
+                    live requests may use provider credits.</p>
             </div>
         </section>
     );

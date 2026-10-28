@@ -80,14 +80,14 @@ const FlightResults = ({ result, loading, error, canRefresh, onRefresh }: Flight
       {result?.liveRefreshError && <p className="saved-warning" role="status">{result.liveRefreshError}</p>}
       {result?.cachePersisted === false && <p className="saved-warning" role="status">This result is available for now, but could not be saved to the cache file.</p>}
 
-      {!error && !result && loading && <div className="empty-state" role="status"><span className="loading-plane" aria-hidden="true">✈</span><h3>Finding flights</h3><p>Checking saved fares first, then asking FlightAPI if needed.</p></div>}
+      {!error && !result && loading && <div className="empty-state" role="status"><span className="loading-plane" aria-hidden="true">✈</span><h3>Finding flights</h3><p>Checking FlightAPI first; saved fares are used if it cannot return current results.</p></div>}
       {!error && !result && !loading && <div className="empty-state"><span aria-hidden="true">✈</span><h3>Ready when you are</h3><p>Choose your airports and travel date, then search to load flight options here.</p></div>}
 
       {result && !error && (
         <>
           <div className="results-tools-row">
             <button type="button" className="refresh-fares" onClick={onRefresh} disabled={loading || !canRefresh}>
-              {loading ? "Checking current prices…" : "Get current prices · uses credits ↗"}
+              {loading ? "Checking current prices…" : "Retry FlightAPI · may use credits ↗"}
             </button>
             <span>{result.localCache ? `Saved result from ${cachedAt}` : `Price checked ${cachedAt}`}</span>
           </div>

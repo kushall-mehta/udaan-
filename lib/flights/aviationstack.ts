@@ -24,6 +24,7 @@ const record = (value: unknown): Row => isRecord(value) ? value : {};
 const asText = (value: unknown): string => typeof value === "string" ? value.trim() : "";
 const asNumber = (value: unknown): number | null => typeof value === "number" && Number.isFinite(value) ? value : null;
 const optionalText = (value: unknown): string | null => asText(value) || null;
+const normalizeFlightCode = (value: string): string => value.toUpperCase().replaceAll(/\s+/g, "");
 
 const providerError = (body: unknown): AviationstackError | null => {
     if (!isRecord(body) || !body.error) return null;
@@ -70,8 +71,20 @@ const normalizeStatus = (flight: Row, direction: AirportDirection): AirportFligh
     const arrival = record(flight.arrival);
     const flightDate = asText(flight.flight_date);
     const flightNumber = asText(flightInfo.number) || asText(flightInfo.iata);
-    const flightId = asText(flightInfo.iata) || `${asText(airline.iata)}${flightNumber}-${flightDate}`;
-    if (!flightId) return null;
+    const flightCode = asText(flightInfo.iata) || `${asText(airline.iata)}${flightNumber}`;
+    if (!flightCode) return null;
+    const flightId = [
+        flightCode,
+        flightDate,
+        asText(departure.iata),
+        asText(arrival.iata),
+        asText(departure.scheduled),
+        asText(departure.estimated),
+        asText(departure.actual),
+        asText(arrival.scheduled),
+        asText(arrival.estimated),
+        asText(arrival.actual),
+    ].filter(Boolean).join("|");
     const relevant = direction === "arr" ? arrival : departure;
     const live = record(flight.live);
     const latitude = asNumber(live.latitude);
@@ -107,6 +120,27 @@ const normalizeStatus = (flight: Row, direction: AirportDirection): AirportFligh
         delayMinutes: asNumber(relevant.delay),
         track,
     };
+};
+
+const uniqueFlights = (flights: AirportFlightStatus[]): AirportFlightStatus[] =>
+    [...new Map(flights.map((flight) => [flight.flightId, flight])).values()];
+
+const matchesFlightCode = (flight: Row, expectedCode: string): boolean => {
+    const airline = record(flight.airline);
+    const flightInfo = record(flight.flight);
+    const iataCode = normalizeFlightCode(asText(flightInfo.iata));
+    const composedCode = normalizeFlightCode(`${asText(airline.iata)}${asText(flightInfo.number)}`);
+    return iataCode === expectedCode || composedCode === expectedCode;
+};
+
+const departsWithinNextDay = (flight: Row, now = Date.now()): boolean => {
+    const departure = record(flight.departure);
+    const timestamp = [departure.estimated, departure.scheduled]
+        .map(asText)
+        .filter(Boolean)
+        .map(Date.parse)
+        .find(Number.isFinite);
+    return timestamp !== undefined && timestamp >= now && timestamp <= now + 24 * 60 * 60 * 1000;
 };
 
 const requestBody = async (url: URL, fetcher: typeof fetch): Promise<Row & { data: Row[] }> => {
@@ -153,10 +187,10 @@ export const getAirportTracking = async (
     url.searchParams.set("offset", "0");
 
     const body = await requestBody(url, fetcher);
-    const flights = body.data
+    const flights = uniqueFlights(body.data
         .map((flight) => normalizeStatus(flight, query.direction))
         .filter((flight): flight is AirportFlightStatus => Boolean(flight))
-        .sort((a, b) => (a.estimatedTime ?? a.actualTime ?? a.scheduledTime ?? "").localeCompare(b.estimatedTime ?? b.actualTime ?? b.scheduledTime ?? ""));
+        .sort((a, b) => (a.estimatedTime ?? a.actualTime ?? a.scheduledTime ?? "").localeCompare(b.estimatedTime ?? b.actualTime ?? b.scheduledTime ?? "")));
     return {airport: query.airport, direction: query.direction, checkedAt: new Date().toISOString(), flights};
 };
 
@@ -172,9 +206,12 @@ export const getFlightTracking = async (
     url.searchParams.set("limit", "100");
     url.searchParams.set("offset", "0");
     const body = await requestBody(url, fetcher);
-    const flights = body.data
-        .map((flight) => normalizeStatus(flight, "arr"))
+    const expectedCode = normalizeFlightCode(query.flightNumber);
+    const flights = uniqueFlights(body.data
+        .filter((flight) => matchesFlightCode(flight, expectedCode))
+        .filter((flight) => departsWithinNextDay(flight))
+        .map((flight) => normalizeStatus(flight, "dep"))
         .filter((flight): flight is AirportFlightStatus => Boolean(flight))
-        .sort((a, b) => (a.estimatedTime ?? a.actualTime ?? a.scheduledTime ?? "").localeCompare(b.estimatedTime ?? b.actualTime ?? b.scheduledTime ?? ""));
+        .sort((a, b) => (a.estimatedTime ?? a.actualTime ?? a.scheduledTime ?? "").localeCompare(b.estimatedTime ?? b.actualTime ?? b.scheduledTime ?? "")));
     return {flightNumber: query.flightNumber, checkedAt: new Date().toISOString(), flights};
 };

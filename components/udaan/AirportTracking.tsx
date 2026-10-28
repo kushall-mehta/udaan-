@@ -11,7 +11,7 @@ const exampleFlightNumbers = [
     {code: "6E6517", route: "DEL → CCU"},
 ];
 const localTime = (value: string | null) => value
-    ? new Date(value).toLocaleTimeString("en-IN", {timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hourCycle: "h23"})
+    ? new Date(value).toLocaleTimeString("en-IN", {timeZone: "Asia/Kolkata", hour: "numeric", minute: "2-digit", hour12: true}).replace(/\b(am|pm)\b/i, (period) => period.toUpperCase())
     : "—";
 const timeInMinutes = (value: string | null): number | null => {
     if (!value) return null;
@@ -194,7 +194,7 @@ const AirportTracking = () => {
                     ))}
                     <small>Examples may stop returning results as schedules change.</small>
                 </div>
-                <p className="tracking-window-note">Searches Aviationstack by flight number. Results depend on current provider coverage; a live map position is shown when available.</p>
+                <p className="tracking-window-note">Shows the exact flight number searched, limited to departures in the next 24 hours. Times are in IST; boarding may begin earlier.</p>
                 {flightError && <div className="tracking-message tracking-error" role="alert">{flightError}</div>}
                 {flightLoading && <div className="tracking-empty" role="status">Looking up this flight…</div>}
                 {flightResult && !flightLoading && (
@@ -206,11 +206,11 @@ const AirportTracking = () => {
                             </div>
                         </div>
                         {flightResult.flights.length === 0 ? (
-                            <div className="tracking-empty">No current flight was returned for that number. Check the code and try again later.</div>
+                            <div className="tracking-empty">No matching flight is scheduled to depart in the next 24 hours. Check the code and try again later.</div>
                         ) : (
                             <div className="tracking-flight-list">
                                 {flightResult.flights.map((flight) => (
-                                    <FlightRow key={flight.flightId} flight={flight} direction="arr"
+                                    <FlightRow key={flight.flightId} flight={flight} direction="dep"
                                         selected={flight.flightId === selectedTrackedFlightId}
                                         onTrack={() => setSelectedTrackedFlightId((current) => current === flight.flightId ? null : flight.flightId)} />
                                 ))}
@@ -250,12 +250,12 @@ const FlightRow = ({flight, direction, selected, onTrack}: {
             <button className="tracking-track-button" type="button" onClick={onTrack} aria-label={`${selected ? "Hide" : "Show"} more details for flight ${flight.airlineCode}${flight.flightNumber}`}>
                 {selected ? "Hide details" : "More details"}
             </button>
-            {selected && <FlightTrackDetails flight={flight}/>}
+            {selected && <FlightTrackDetails flight={flight} direction={direction}/>}
         </article>
     );
 };
 
-const FlightTrackDetails = ({flight}: { flight: AirportFlightStatus }) => {
+const FlightTrackDetails = ({flight, direction}: { flight: AirportFlightStatus; direction: AirportDirection }) => {
     const latest = flight.track?.positions[0];
     const mapUrl = latest ? new URL("https://www.openstreetmap.org/export/embed.html") : null;
     if (latest && mapUrl) {
@@ -282,7 +282,7 @@ const FlightTrackDetails = ({flight}: { flight: AirportFlightStatus }) => {
                 ) :
                     <div className="track-map track-map-empty">No live map position is available for this flight right now.</div>}
                 <div className="track-position-summary">
-                    <span className="position-label">STATUS & SCHEDULE</span>
+                    <span className="position-label">{direction === "dep" ? "DEPARTURE TIMES (IST)" : "ARRIVAL TIMES (IST)"}</span>
                     <strong>{flight.status}</strong>
                     <p>Scheduled {localTime(flight.scheduledTime)}</p>
                     <p>Estimated {localTime(flight.estimatedTime)}</p>
@@ -300,7 +300,7 @@ const FlightTrackDetails = ({flight}: { flight: AirportFlightStatus }) => {
                     </>}
                 </div>
             </div>
-            <p className="track-estimate-note">Aviationstack returns live positions when available; not every flight includes a current map location.</p>
+            <p className="track-estimate-note">Times are scheduled, estimated, or actual flight times in IST. Airline boarding-start times are not supplied; live positions may also be unavailable.</p>
         </section>
     );
 };

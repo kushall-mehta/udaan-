@@ -12,8 +12,7 @@ export const GET = async (request: NextRequest) => {
   const headers = { "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff" };
   try {
     const query = validateFlightSearch(request.nextUrl.searchParams);
-    const refresh = request.nextUrl.searchParams.get("refresh") === "true";
-    const result = await search(query, process.env.FLIGHTAPI_KEY || "", refresh);
+    const result = await search(query, process.env.FLIGHTAPI_KEY || "");
     return NextResponse.json(result, { headers });
   } catch (error: unknown) {
     return NextResponse.json(

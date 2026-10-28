@@ -2,7 +2,7 @@
 
 Udaan is a domestic flight search app for comparing itineraries across India. Search one-way or round-trip routes, filter and sort fares, and follow seller links to complete a booking. Udaan does not book flights.
 
-Flight results come from FlightAPI. Searches reuse locally saved results when available; requesting current prices makes a new FlightAPI request and may use provider credits. Saved prices can be outdated.
+Flight results come from FlightAPI. Each search requests current results first and may use provider credits. If FlightAPI cannot return results, Udaan falls back to a valid locally saved result for that search; saved prices can be outdated. If neither source has data, the search returns a clear error.
 
 ## Features
 
@@ -10,7 +10,7 @@ Flight results come from FlightAPI. Searches reuse locally saved results when av
 - View Aviationstack arrival and departure boards with available live flight positions.
 - Compare one-way and round-trip itineraries, including duration, stops, airline, and seller prices.
 - Sort by price, duration, or departure time; filter by stops, airline, and maximum price.
-- Reuse local search results and explicitly request an updated fare from FlightAPI.
+- Request current FlightAPI results first and fall back to a saved result if the provider fails.
 - Validate search inputs and provider responses on the server.
 
 ## Requirements
@@ -49,7 +49,7 @@ Start the development server:
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Keep your real API key private; `.env.local` is ignored by Git. Without a valid key, current-price requests will return an error. Previously saved results may still be available from the local cache.
+Open [http://localhost:3000](http://localhost:3000). Keep your real API key private; `.env.local` is ignored by Git. Without a valid key, a search can still show a saved result; if there is no valid cache entry, the app returns a clear error.
 
 ## Available scripts
 
@@ -63,7 +63,7 @@ Open [http://localhost:3000](http://localhost:3000). Keep your real API key priv
 
 ## Airport tracking
 
-Open **Airport tracking** in the navigation, enter an Indian airport's IATA code, and choose arrivals or departures to load the current board. Optionally filter by an IST time range. Use **More details** to see schedule and status details and a live map position when available. The separate **Track by flight number** form queries one flight directly. Each refresh makes one Aviationstack API request; the time filter does not make extra requests, and the page does not poll automatically. A missing map position means the provider did not return a live location for that flight.
+Open **Airport tracking** in the navigation, enter an Indian airport's IATA code, and choose arrivals or departures to load the current board. Optionally filter by an IST time range. Use **More details** to see schedule and status details and a live map position when available. The separate **Track by flight number** form shows only the exact searched code and departures scheduled in the next 24 hours. Times use AM/PM in IST; the API does not supply airline boarding-start times. Each refresh makes one Aviationstack API request; the time filter does not make extra requests, and the page does not poll automatically. A missing map position means the provider did not return a live location for that flight.
 
 ## Data and privacy
 

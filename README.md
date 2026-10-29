@@ -62,6 +62,7 @@ Open [http://localhost:3000](http://localhost:3000). Keep your real API key priv
 | `npm run build` | Build the production app. |
 | `npm run start` | Serve the production build. |
 | `npm run lint` | Run ESLint. |
+| `npm run typecheck` | Generate Next.js route types and run TypeScript. |
 | `npm test` | Run the flight search API tests. |
 
 ## Docker

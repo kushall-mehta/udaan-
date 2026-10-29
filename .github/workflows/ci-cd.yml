@@ -69,7 +69,7 @@ jobs:
         id: metadata
         uses: docker/metadata-action@v6
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ghcr.io/${{ github.repository_owner }}/udaan-app
           tags: |
             type=ref,event=branch
             type=ref,event=tag

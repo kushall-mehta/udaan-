@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "flight_date": "2026-10-29",
+      "flight_status": "active",
+      "airline": { "iata": "AI", "name": "Air India" },
+      "flight": { "iata": "AI2626", "number": "2626" },
+      "departure": {
+        "iata": "HYD",
+        "scheduled": "2026-10-29T07:35:00+00:00",
+        "estimated": "2026-10-29T07:35:00+00:00",
+        "actual": "2026-10-29T07:36:00+00:00"
+      },
+      "arrival": {
+        "iata": "BOM",
+        "scheduled": "2026-10-29T09:10:00+00:00",
+        "estimated": "2026-10-29T08:48:00+00:00",
+        "actual": "2026-10-29T08:50:00+00:00"
+      }
+    },
+    {
+      "flight_date": "2026-10-28",
+      "flight_status": "landed",
+      "airline": { "iata": "AI", "name": "Air India" },
+      "flight": { "iata": "AI2626", "number": "2626" },
+      "departure": {
+        "iata": "HYD",
+        "scheduled": "2026-10-28T07:35:00+00:00",
+        "estimated": "2026-10-28T07:35:00+00:00",
+        "actual": "2026-10-28T07:42:00+00:00"
+      },
+      "arrival": {
+        "iata": "BOM",
+        "scheduled": "2026-10-28T09:10:00+00:00",
+        "estimated": "2026-10-28T08:58:00+00:00",
+        "actual": "2026-10-28T08:53:00+00:00"
+      }
+    }
+  ]
+}

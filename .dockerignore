@@ -1,0 +1,16 @@
+.git
+.github
+.idea
+.next
+.cache
+node_modules
+coverage
+out
+build
+tmp
+output
+.env
+.env.*
+!.env.example
+npm-debug.log*
+*.tsbuildinfo

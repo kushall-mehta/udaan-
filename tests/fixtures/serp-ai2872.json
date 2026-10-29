@@ -1,0 +1,92 @@
+{
+  "flight_result": {
+    "available_dates": [
+      "2026-10-28",
+      "2026-10-29",
+      "2026-10-30",
+      "2026-10-31"
+    ],
+    "dates": [
+      {
+        "date": "2026-10-28",
+        "metadata": {
+          "airline_iata_code": "AI",
+          "flight_number": "2872",
+          "origin": "HYD",
+          "destination": "BOM",
+          "status": "ARRIVED",
+          "departure_delay": -22,
+          "arrival_delay": -28
+        }
+      },
+      {
+        "date": "2026-10-29",
+        "metadata": {
+          "airline_iata_code": "AI",
+          "flight_number": "2872",
+          "origin": "HYD",
+          "destination": "BOM",
+          "status": "ARRIVED",
+          "departure_delay": -16,
+          "arrival_delay": -12
+        },
+        "flight_designator": "AI 2872",
+        "departure_airport": {
+          "time": "2026-10-29T05:34:00.000+05:30",
+          "scheduled_time": "2026-10-29T05:50:00.000+05:30",
+          "gate": "10",
+          "id": "HYD",
+          "city": "Hyderabad",
+          "time_label": "5:34 am",
+          "scheduled_time_label": "5:50 am",
+          "terminal": "-",
+          "status": "Departed"
+        },
+        "arrival_airport": {
+          "time": "2026-10-29T07:13:00.000+05:30",
+          "scheduled_time": "2026-10-29T07:25:00.000+05:30",
+          "terminal": "2",
+          "id": "BOM",
+          "city": "Mumbai",
+          "time_label": "7:13 am",
+          "scheduled_time_label": "7:25 am",
+          "gate": "-",
+          "status": "Arrived"
+        },
+        "duration": 99,
+        "source": "OAG",
+        "source_url": "https://www.flightview.com/flight-tracker/AI/2872?date=20261029&depapt=HYD",
+        "updated_at": "2026-10-29T01:48:48.469Z",
+        "status": "Arrived",
+        "duration_label": "1h 39m",
+        "updated_label": "Updated 5h 8m ago"
+      },
+      {
+        "date": "2026-10-30",
+        "metadata": {
+          "airline_iata_code": "AI",
+          "flight_number": "2872",
+          "origin": "HYD",
+          "destination": "BOM",
+          "status": "SCHEDULED_STATUS",
+          "departure_delay": 0,
+          "arrival_delay": 0
+        }
+      },
+      {
+        "date": "2026-10-31",
+        "metadata": {
+          "airline_iata_code": "AI",
+          "flight_number": "2872",
+          "origin": "HYD",
+          "destination": "BOM",
+          "status": "SCHEDULED_STATUS",
+          "departure_delay": 0,
+          "arrival_delay": 0
+        }
+      }
+    ],
+    "airline": "Air India",
+    "airline_iata_code": "AI"
+  }
+}

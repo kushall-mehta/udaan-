@@ -1,18 +1,21 @@
 export type AirportDirection = "arr" | "dep";
 
-export type TrackedPosition = {
-  latitude: number;
-  longitude: number;
-  altitude: number | null;
-  speed: number | null;
-  source: string;
-  timestamp: string;
+export type FlightStopStatus = {
+  airport: string;
+  timezone?: string | null;
+  scheduledTime: string | null;
+  estimatedTime: string | null;
+  actualTime: string | null;
+  terminal: string | null;
+  gate: string | null;
+  baggage: string | null;
+  delayMinutes: number | null;
 };
-
-export type AirportFlightTrack = { flightId: string; positions: TrackedPosition[] };
 
 export type AirportFlightStatus = {
   flightId: string;
+  /** Provider flight date when supplied; timestamps remain authoritative for local display date. */
+  flightDate?: string | null;
   airline: string;
   airlineCode: string;
   flightNumber: string;
@@ -26,18 +29,26 @@ export type AirportFlightStatus = {
   gate: string | null;
   baggage: string | null;
   delayMinutes: number | null;
-  track: AirportFlightTrack | null;
+  departure: FlightStopStatus;
+  arrival: FlightStopStatus;
+  positionProgress?: {percent: number; reportedAt: string} | null;
+  source?: string;
+  sourceUpdatedAt?: string | null;
 };
 
 export type AirportTrackingResponse = {
   airport: string;
   direction: AirportDirection;
+  flightDate?: string;
   checkedAt: string;
   flights: AirportFlightStatus[];
+  warning?: string;
 };
 
 export type FlightTrackingResponse = {
   flightNumber: string;
+  flightDate?: string;
   checkedAt: string;
   flights: AirportFlightStatus[];
+  source?: string;
 };

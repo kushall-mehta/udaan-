@@ -1,0 +1,39 @@
+{
+  "data": [
+    {
+      "flight_date": "2026-10-29",
+      "flight_status": "landed",
+      "airline": { "iata": "IX", "name": "Air India Express" },
+      "flight": { "iata": "IX2216", "number": "2216" },
+      "departure": {
+        "iata": "JGA", "timezone": "Asia/Kolkata",
+        "scheduled": "2026-10-29T08:40:00+00:00",
+        "actual": "2026-10-29T08:55:00+00:00",
+        "terminal": null, "gate": null
+      },
+      "arrival": {
+        "iata": "BOM", "timezone": "Asia/Kolkata",
+        "scheduled": "2026-10-29T10:20:00+00:00",
+        "actual": "2026-10-29T10:24:00+00:00",
+        "terminal": "2", "gate": null
+      }
+    },
+    {
+      "flight_date": "2026-10-28",
+      "flight_status": "landed",
+      "airline": { "iata": "IX", "name": "Air India Express" },
+      "flight": { "iata": "IX2216", "number": "2216" },
+      "departure": {
+        "iata": "JGA", "timezone": "Asia/Kolkata",
+        "scheduled": "2026-10-28T14:10:00+00:00",
+        "actual": "2026-10-28T14:09:00+00:00"
+      },
+      "arrival": {
+        "iata": "BOM", "timezone": "Asia/Kolkata",
+        "scheduled": "2026-10-28T15:50:00+00:00",
+        "actual": "2026-10-28T15:14:00+00:00",
+        "terminal": "2"
+      }
+    }
+  ]
+}

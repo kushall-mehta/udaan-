@@ -160,6 +160,9 @@
 .flight-pagination { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 20px; padding: 15px 0; border-top: 1px solid var(--line); }
 .flight-pagination > p { margin: 0; color: var(--muted); font-size: 11px; }
 .flight-pagination > p strong { color: #16382e; font-weight: 650; }
+.tracking-board > .flight-pagination { margin-top: 0; padding: 15px 20px; }
+.tracking-page-summary { margin-top: 7px; color: var(--muted); font-size: 11px; }
+#airport-flight-board { scroll-margin-top: 20px; }
 .pagination-buttons { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 5px; }
 .pagination-buttons button { min-width: 34px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 5px; background: #fff; color: var(--green); font-size: 10px; }
 .pagination-buttons button:hover:not(:disabled) { background: #edf4ed; }
@@ -205,7 +208,7 @@
 .tracking-flight-list { border-top: 1px solid #edf0eb; }
 .tracking-flight-row { display: grid; grid-template-columns: 76px minmax(180px,1fr) minmax(100px,.6fr) 120px 105px; align-items: center; gap: 15px; min-height: 76px; border-bottom: 1px solid #edf0eb; padding: 12px 20px; }
 .tracking-flight-row.is-selected { background: #f4f8f3; }
-.tracking-flight-row > .flight-track-details { grid-column: 2 / -1; width: auto; margin: 4px 0 8px; padding: 12px; }
+.tracking-flight-row > .flight-status-card { grid-column: 2 / -1; width: auto; margin: 4px 0 8px; padding: 18px; }
 .tracking-time-block { display: flex; flex-direction: column; gap: 3px; }
 .tracking-time-block strong { font-size: 16px; }
 .tracking-time-block small { color: var(--muted); font-size: 9px; }
@@ -219,29 +222,59 @@
 .tracking-track-button { justify-self: end; border: 1px solid #cadbca; border-radius: 5px; background: #fff; color: var(--green); padding: 8px 10px; font-size: 10px; font-weight: 650; white-space: nowrap; }
 .tracking-track-button:hover:not(:disabled) { background: #edf4ed; }
 .tracking-track-button:disabled { cursor: default; color: #919a91; opacity: .75; }
-.flight-track-details { margin: 20px; border: 1px solid #dfe8dd; border-radius: 9px; background: #fbfcfa; padding: 18px; }
-.track-details-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
-.track-details-heading h3 { margin-top: 5px; font-size: 18px; }
-.track-details-heading > span { color: var(--muted); font-size: 11px; }
-.track-details-grid { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(220px,1fr); gap: 16px; }
-.track-map-frame { position: relative; min-width: 0; }
-.track-map { width: 100%; min-height: 250px; border: 1px solid var(--line); border-radius: 6px; background: #eef1ea; }
-.flight-map-marker { position: absolute; top: 50%; left: 50%; display: grid; width: 38px; height: 38px; place-items: center; transform: translate(-50%,-50%); border: 2px solid #fff; border-radius: 50%; background: var(--green); box-shadow: 0 3px 10px rgba(12,45,31,.35); color: #fff; pointer-events: none; }
-.flight-map-marker svg { width: 20px; height: 20px; fill: currentColor; transform: rotate(45deg); }
-.track-map-empty { display: grid; place-items: center; padding: 24px; color: var(--muted); font-size: 12px; text-align: center; }
-.track-position-summary { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; border-radius: 6px; background: #f1f5ef; padding: 16px; }
-.position-label { color: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 1px; }
-.track-position-summary > strong { font-size: 17px; }
-.track-position-summary p { color: #53665a; font-size: 11px; }
-.track-position-summary a { margin-top: auto; padding-top: 10px; color: var(--green); font-size: 10px; text-decoration: underline; }
-.track-history { margin-top: 15px; border-top: 1px solid var(--line); padding-top: 12px; }
-.track-history summary { color: var(--green); cursor: pointer; font-size: 11px; font-weight: 650; }
-.track-history-list { margin-top: 8px; }
-.track-history-point { display: grid; grid-template-columns: 90px 1fr 100px; gap: 12px; border-top: 1px solid #edf0eb; padding: 8px 0; color: var(--muted); font-size: 10px; }
-.track-estimate-note { margin-top: 10px !important; color: var(--muted); font-size: 9px; }
+.flight-status-card { --journey-color: #255b44; --journey-soft: #eaf2ec; min-width: 0; border: 1px solid #dfe8dd; border-radius: 18px; background: #fff; padding: 20px; }
+.flight-status-card[data-tone="arrived"],.flight-status-card[data-tone="delayed"] { --journey-color: #bd610b; --journey-soft: #fff2e3; }
+.flight-status-card[data-tone="cancelled"] { --journey-color: #a23e35; --journey-soft: #fbeeea; }
+.flight-status-card[data-tone="neutral"] { --journey-color: #66776b; --journey-soft: #f0f3ef; }
+.journey-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.journey-heading h3 { color: #153a2d; font-size: 18px; font-weight: 750; line-height: 1.35; }
+.journey-heading > span { flex-shrink: 0; color: var(--muted); font-size: 11px; }
+.journey-updated { margin-top: 7px; color: var(--muted); font-size: 11px; }
+.journey-status { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin: 12px 0; }
+.journey-status > span { border-radius: 4px; background: var(--journey-color); color: #fff; padding: 4px 7px; font-size: 10px; font-weight: 650; }
+.journey-status > p { color: #324c3e; font-size: 12px; }
+.journey-route { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; }
+.journey-route > strong { color: #172c21; font-size: 16px; font-weight: 750; }
+.journey-line { position: relative; display: block; height: 4px; border-radius: 4px; background: #dfe7e1; }
+.journey-line-fill { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--journey-color); transition: width 1s linear; }
+.journey-dot { position: absolute; width: 8px; height: 8px; top: -2px; border-radius: 50%; }
+.journey-dot-start { left: 0; background: var(--journey-color); }
+.journey-dot-end { right: 0; background: #c4d0c8; }
+.journey-line[data-complete="true"] .journey-dot-end { background: var(--journey-color); }
+.journey-plane { position: absolute; top: 50%; width: 24px; height: 24px; border: 3px solid #fff; border-radius: 50%; background: #fff; transform: translate(-50%,-50%) rotate(90deg); color: var(--journey-color); transition: left 1s linear; }
+.journey-plane svg { display: block; width: 18px; height: 18px; fill: currentColor; }
+.journey-progress-summary { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; font-size: 11px; }
+.journey-progress-summary strong { color: var(--journey-color); font-weight: 650; }
+.journey-progress-summary > span { color: var(--muted); text-align: right; }
+.journey-progress-note { margin: 5px 0 7px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.journey-update-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.journey-refresh-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 10px; color: var(--muted); }
+.journey-refresh-controls label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+.journey-refresh-controls input { accent-color: var(--green); }
+.journey-refresh-controls button { padding: 5px 8px; border: 1px solid #dce6de; border-radius: 4px; background: #fff; color: var(--green); cursor: pointer; }
+.journey-refresh-controls button:disabled { opacity: .6; cursor: wait; }
+.journey-refresh-error { margin-top: 7px; color: #9c432a; font-size: 11px; line-height: 1.5; }
+@media(prefers-reduced-motion:reduce) { .journey-line-fill,.journey-plane { transition: none; } }
+.journey-times,.journey-airports { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 20px; }
+.journey-endpoint { padding-top: 6px; }
+.journey-arrival { text-align: right; }
+.journey-time { display: block; color: var(--journey-color); font-size: 26px; font-weight: 750; line-height: 1.2; }
+.journey-time-kind { display: block; margin: 4px 0 10px; color: var(--muted); font-size: 10px; }
+.journey-provider-note { display: block; min-height: 14px; margin: -7px 0 7px; color: var(--muted); font-size: 11px; line-height: 14px; white-space: nowrap; }
+.journey-endpoint p { color: #344d3f; font-size: 11px; line-height: 1.7; }
+.journey-airports { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px; }
+.journey-facilities { display: flex; flex-wrap: wrap; gap: 12px 20px; font-size: 11px; }
+.journey-facilities:last-child { justify-content: flex-end; text-align: right; }
+.journey-facilities dt { color: var(--muted); margin-bottom: 6px; }
+.journey-facilities dd { margin: 0; color: #20392b; font-weight: 600; }
+.journey-note { margin-top: 15px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.journey-time-disclaimer { margin-top: 6px; color: var(--muted); font-size: 11px; line-height: 1.35; text-wrap: pretty; }
+.journey-collapse { display: grid; place-items: center; margin: 7px auto -8px; width: 36px; height: 30px; border: 0; border-radius: 5px; background: transparent; color: var(--green); cursor: pointer; }
+.journey-collapse:hover { background: var(--journey-soft); }
+@media(max-width:700px) { .journey-heading h3 { font-size: 16px; }.journey-time { font-size: 22px; }.journey-times,.journey-airports { gap: 12px; }.journey-facilities { gap: 12px; } }
 .tracking-disclaimer { max-width: 720px; margin: 14px 0 0 !important; color: var(--muted); font-size: 10px; line-height: 1.6; }
 @media(max-width:950px) { .tracking-controls { grid-template-columns: repeat(4,minmax(0,1fr)); }.tracking-controls label:first-child { grid-column: span 2; }.tracking-search { justify-self: end; } }
-@media(max-width:700px) { .airport-tracking-page { padding: 30px 16px 50px; }.tracking-controls { grid-template-columns: 1fr 1fr; padding: 14px; }.tracking-controls label:first-child,.tracking-controls label:nth-child(2) { grid-column: 1 / -1; }.tracking-direction { grid-column: 1; }.tracking-search { grid-column: 2; width: 100%; }.flight-number-controls { grid-template-columns: 1fr auto; padding: 0 14px 14px; }.flight-number-examples { padding: 0 14px 12px; }.tracking-window-note { padding: 10px 14px; }.tracking-flight-row { grid-template-columns: 58px 1fr auto; gap: 9px; padding: 12px; }.tracking-flight-row > .flight-track-details { grid-column: 2 / -1; margin: 8px 0 4px; padding: 10px; }.tracking-gate-info { grid-column: 2; grid-row: 2; flex-direction: row; flex-wrap: wrap; }.tracking-status { grid-column: 3; grid-row: 1; }.tracking-track-button { grid-column: 3; grid-row: 2; }.track-details-grid { grid-template-columns: 1fr; }.track-map { min-height: 220px; }.flight-track-details { margin: 12px; padding: 13px; } }
+@media(max-width:700px) { .airport-tracking-page { padding: 30px 16px 50px; }.tracking-controls { grid-template-columns: 1fr 1fr; padding: 14px; }.tracking-controls label:first-child,.tracking-controls label:nth-child(2) { grid-column: 1 / -1; }.tracking-direction { grid-column: 1; }.tracking-search { grid-column: 2; width: 100%; }.flight-number-controls { grid-template-columns: 1fr auto; padding: 0 14px 14px; }.flight-number-examples { padding: 0 14px 12px; }.tracking-window-note { padding: 10px 14px; }.tracking-flight-row { grid-template-columns: 58px 1fr auto; gap: 9px; padding: 12px; }.tracking-flight-row > .flight-status-card { grid-column: 1 / -1; margin: 8px 0 4px; padding: 14px; }.tracking-gate-info { grid-column: 2; grid-row: 2; flex-direction: row; flex-wrap: wrap; }.tracking-status { grid-column: 3; grid-row: 1; }.tracking-track-button { grid-column: 3; grid-row: 2; } }
 
 .best-booking-link { grid-column: 1 / -1; justify-self: start; display: inline-flex; align-items: center; border: 0; border-radius: 5px; background: var(--green); color: #fff !important; padding: 10px 13px; font-size: 10px; font-weight: 650; text-decoration: none; }
 .best-booking-link:hover:not(:disabled) { background: #173e2e; }
